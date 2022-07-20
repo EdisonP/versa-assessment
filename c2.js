@@ -11,63 +11,39 @@ function getCrypto(symbolTarget) {
   var priceUSD_res;
   var priceMYR_res;
   var rateUSDMYR_res;
-  var date;
+  var date_res;
   var finalRes = {};
 
-  getRate()
-    .then((rateUSDMYR_return) => {
-      rateUSDMYR_res = rateUSDMYR_return;
-      try {
-        // fetch currency rate
-        //fetch cryptodata
+  getRate().then((rateUSDMYR_return) => {
+    rateUSDMYR_res = rateUSDMYR_return;
+    try {
+      for (let i = 0; i < currencyArray.length; i++) {
+        getPrice(symbolTarget, currencyArray[i]).then((price_res) => {
+          switch (currencyArray[i]) {
+            case "USD":
+              priceUSD_res = price_res;
+              break;
+            case "MYR":
+              priceMYR_res = price_res;
+              break;
+          }
 
-        for (let i = 0; i < currencyArray.length; i++) {
-          const req = {
-            method: "GET",
-            url: api_url,
-            params: {
-              from_currency: symbolTarget,
-              function: "CURRENCY_EXCHANGE_RATE",
-              to_currency: currencyArray[i],
-              datatype: "json",
-              output_size: "compact",
-            },
-            headers: {
-              "X-RapidAPI-Key": api_key,
-              "X-RapidAPI-Host": api_host,
-            },
-          };
-          // send request to API
-          axios
-            .request(req)
-            .then(function (response2) {
-              res = response2.data[Object.keys(response2.data)[0]];
-              let currency = JSON.stringify(res[Object.keys(res)[2]]);
-              let date = JSON.stringify(res[Object.keys(res)[5]]);
-              if (currency.toString == currencyArray[0].toString) {
-                priceUSD_res = res[Object.keys(res)[4]];
-              } else if (currency.toString == currencyArray[1].toString) {
-                priceMYR_res = res[Object.keys(res)[4]];
-              }
-            })
-            .catch(function (error) {
-              console.error(error);
-            });
-        }
-      } catch (error) {
-        console.log(error);
+          if (priceUSD_res != null && priceMYR_res != null) {
+            finalRes = {
+              symbol: symbolTarget,
+              priceUSD: priceUSD_res,
+              priceMYR: priceMYR_res,
+              rateUSDMYR: rateUSDMYR_res,
+              date: "bruh",
+            };
+            finalOutput.push(finalRes);
+          }
+        });
       }
-    })
-    .finally(() => {
-      finalRes = {
-        symbol: symbolTarget,
-        priceUSD: priceUSD_res,
-        priceMYR: priceMYR_res,
-        rateUSDMYR: rateUSDMYR_res,
-        date: "bruh",
-      };
-      console.log(finalRes);
-    });
+    } catch (error) {
+      console.log(error);
+    }
+  });
 }
 
 function getRate() {
@@ -101,6 +77,43 @@ function getRate() {
       });
   });
 }
+
+function getPrice(symbolTarget, currencyTarget) {
+  return new Promise(function (resolve, reject) {
+    const req = {
+      method: "GET",
+      url: api_url,
+      params: {
+        from_currency: symbolTarget,
+        function: "CURRENCY_EXCHANGE_RATE",
+        to_currency: currencyTarget,
+        datatype: "json",
+        output_size: "compact",
+      },
+      headers: {
+        "X-RapidAPI-Key": api_key,
+        "X-RapidAPI-Host": api_host,
+      },
+    };
+
+    axios
+      .request(req)
+      .then(function (response) {
+        var res = response.data[Object.keys(response.data)[0]];
+        var price_res = res[Object.keys(res)[8]];
+        if (price_res != null) {
+          resolve(parseFloat(price_res));
+        } else {
+          reject("Error fetching from API");
+        }
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  });
+}
+
+function getDate() {}
 
 function run() {
   // 3 requests per symbol

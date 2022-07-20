@@ -1,3 +1,4 @@
+// initialization
 const target = 100;
 const fs = require("fs");
 var tempArray = [];
@@ -6,6 +7,7 @@ let b0 = 0,
   b2 = 0,
   val = 0;
 
+// loop for assigning values, up to the assigned target integer
 for (var i = 1; i <= target; i++) {
   if (i % 3 === 0 && i % 5 === 0) {
     tempArray.push("BIG BANG");
@@ -22,6 +24,7 @@ for (var i = 1; i <= target; i++) {
   }
 }
 
+// output data logs
 // console.log(tempArray);
 // console.log(
 //   "\nBIG BANG:\t" +
@@ -34,9 +37,10 @@ for (var i = 1; i <= target; i++) {
 //     val,
 // );
 
+// write results to output.js
 try {
-  var output = JSON.stringify(tempArray);
-  fs.writeFileSync("output.json", output);
+  let result = JSON.stringify(tempArray);
+  fs.writeFileSync("output.json", result);
 } catch (err) {
   console.error(err);
 }

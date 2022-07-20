@@ -7,15 +7,15 @@ const api_key = "e79d7e9983mshc39d988d165c7ccp17a614jsn24f04095fb67";
 const api_host = "alpha-vantage.p.rapidapi.com",
   finalOutput = [];
 
-function getCrypto(symbolTarget) {
+async function getCrypto(symbolTarget) {
   var priceUSD_res;
   var priceMYR_res;
   var rateUSDMYR_res;
   var date_res;
   var finalRes = {};
 
-  getRate().then((rateUSDMYR_return) => {
-    rateUSDMYR_res = rateUSDMYR_return;
+  getRate().then((rate_res) => {
+    rateUSDMYR_res = rate_res;
     try {
       for (let i = 0; i < currencyArray.length; i++) {
         getPrice(symbolTarget, currencyArray[i]).then((price_res) => {
@@ -31,12 +31,14 @@ function getCrypto(symbolTarget) {
           if (priceUSD_res != null && priceMYR_res != null) {
             finalRes = {
               symbol: symbolTarget,
-              priceUSD: priceUSD_res,
-              priceMYR: priceMYR_res,
+              priceUSD: priceUSD_res.toFixed(2),
+              priceMYR: priceMYR_res.toFixed(2),
               rateUSDMYR: rateUSDMYR_res,
-              date: "bruh",
+              date: getDate(),
             };
+
             finalOutput.push(finalRes);
+            console.log(finalOutput);
           }
         });
       }
@@ -113,12 +115,30 @@ function getPrice(symbolTarget, currencyTarget) {
   });
 }
 
-function getDate() {}
+function getDate() {
+  let currentDate = new Date();
 
-function run() {
-  // 3 requests per symbol
-  getCrypto(symbolArray[0]);
-  // console.log(output);
+  let finalDate =
+    currentDate.getFullYear() +
+    "-" +
+    ("0" + (currentDate.getMonth() + 1)).slice(-2) +
+    "-" +
+    ("0" + (currentDate.getDate() + 1)).slice(-2);
+
+  return finalDate;
 }
 
-run();
+async function getData() {
+  // 3 requests per symbol, cap is 5 requests per minute
+  // for (var i = 0; i < symbolArray.length; i++) {
+  //   await console.log(getCrypto(symbolArray[i]));
+  // }
+
+  getCrypto(symbolArray[0]);
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+getData();

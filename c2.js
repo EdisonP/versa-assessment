@@ -1,53 +1,60 @@
 const axios = require("axios");
 const symbolArray = ["BTC", "ETH", "XRP"];
+// const symbolArray = ["BTC", "ETH"];
 const currencyArray = ["USD", "MYR"];
 
 const api_url = "https://alpha-vantage.p.rapidapi.com/query";
-const api_key = "e79d7e9983mshc39d988d165c7ccp17a614jsn24f04095fb67";
-const api_host = "alpha-vantage.p.rapidapi.com",
-  finalOutput = [];
+// const api_key = "e79d7e9983mshc39d988d165c7ccp17a614jsn24f04095fb67";
+const api_key = "cedfab5358mshe58fa096c396573p10fef8jsn6ea00329114d";
+const api_host = "alpha-vantage.p.rapidapi.com";
 
+// retrieve cryptocurreny Obj, sends 3 requests
+// 3 requests per call, cap at 5 requests per minute due to FREE subscription
 async function getCrypto(symbolTarget) {
   var priceUSD_res;
   var priceMYR_res;
   var rateUSDMYR_res;
-  var date_res;
   var finalRes = {};
 
-  getRate().then((rate_res) => {
-    rateUSDMYR_res = rate_res;
-    try {
-      for (let i = 0; i < currencyArray.length; i++) {
-        getPrice(symbolTarget, currencyArray[i]).then((price_res) => {
-          switch (currencyArray[i]) {
-            case "USD":
-              priceUSD_res = price_res;
-              break;
-            case "MYR":
-              priceMYR_res = price_res;
-              break;
-          }
+  return new Promise(function (resolve, reject) {
+    getRate().then((rate_res) => {
+      rateUSDMYR_res = rate_res;
+      try {
+        for (let i = 0; i < currencyArray.length; i++) {
+          getPrice(symbolTarget, currencyArray[i]).then((price_res) => {
+            switch (currencyArray[i]) {
+              case "USD":
+                priceUSD_res = price_res;
+                break;
+              case "MYR":
+                priceMYR_res = price_res;
+                break;
+            }
 
-          if (priceUSD_res != null && priceMYR_res != null) {
-            finalRes = {
-              symbol: symbolTarget,
-              priceUSD: priceUSD_res.toFixed(2),
-              priceMYR: priceMYR_res.toFixed(2),
-              rateUSDMYR: rateUSDMYR_res,
-              date: getDate(),
-            };
-
-            finalOutput.push(finalRes);
-            console.log(finalOutput);
-          }
-        });
+            if (priceUSD_res != null && priceMYR_res != null) {
+              finalRes = {
+                symbol: symbolTarget,
+                priceUSD: priceUSD_res.toFixed(2),
+                priceMYR: priceMYR_res.toFixed(2),
+                rateUSDMYR: rateUSDMYR_res,
+                date: getDate(),
+              };
+              setTimeout(() => {
+                console.log("Retrieved:\t" + symbolTarget + "\n");
+                resolve(finalRes);
+              }, 60000);
+              // Timeout due to limit of 5 request per minute
+            }
+          });
+        }
+      } catch (error) {
+        reject("Error fetching from API");
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
   });
 }
 
+// retrieve USD to MYR rate
 function getRate() {
   return new Promise(function (resolve, reject) {
     const currencyRate = {
@@ -80,6 +87,7 @@ function getRate() {
   });
 }
 
+// retrieve currency price
 function getPrice(symbolTarget, currencyTarget) {
   return new Promise(function (resolve, reject) {
     const req = {
@@ -102,6 +110,7 @@ function getPrice(symbolTarget, currencyTarget) {
       .request(req)
       .then(function (response) {
         var res = response.data[Object.keys(response.data)[0]];
+        test = res;
         var price_res = res[Object.keys(res)[8]];
         if (price_res != null) {
           resolve(parseFloat(price_res));
@@ -115,9 +124,9 @@ function getPrice(symbolTarget, currencyTarget) {
   });
 }
 
+// retrieve date
 function getDate() {
   let currentDate = new Date();
-
   let finalDate =
     currentDate.getFullYear() +
     "-" +
@@ -128,17 +137,18 @@ function getDate() {
   return finalDate;
 }
 
+// looping per symbol
 async function getData() {
-  // 3 requests per symbol, cap is 5 requests per minute
-  // for (var i = 0; i < symbolArray.length; i++) {
-  //   await console.log(getCrypto(symbolArray[i]));
-  // }
-
-  getCrypto(symbolArray[0]);
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  var finalOutput = [];
+  var finalJSON;
+  console.log("Requests are made per minute, so it may take awhile....\n");
+  for (const symbol of symbolArray) {
+    console.log("Fetching:\t" + symbol);
+    let output = await getCrypto(symbol);
+    finalOutput.push(output);
+  }
+  finalJSON = JSON.stringify(finalOutput);
+  console.log(finalJSON);
 }
 
 getData();

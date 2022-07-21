@@ -41,6 +41,7 @@ for (var i = 1; i <= target; i++) {
 try {
   let result = JSON.stringify(tempArray);
   fs.writeFileSync("output.json", result);
+  console.log('"output.js" has been generated, check project folder....');
 } catch (err) {
   console.error(err);
 }

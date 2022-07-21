@@ -1,9 +1,14 @@
-Be sure to navigate into this project's folder in the terminal.
+# Pre-requisites
 
-Execute "npm install" to initialize node_modules
+1. Have Node.js installed.
 
 # Challenge 1
 
-Execute the file c1.js with "node c1.js" in your terminal (CMD.exe, Visual Studio Code...) to produce output.js with the expected output.
+1. Execute "node c1.js" in your terminal.
+2. "output.js" will be generated in project folder.
 
 # Challenge 2
+
+1. Execute "npm install" to install dependencies.
+2. Execute "node c2.js".
+3. Output will be displayed on console log.

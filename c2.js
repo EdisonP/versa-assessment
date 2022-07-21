@@ -7,16 +7,18 @@ const api_key = "cedfab5358mshe58fa096c396573p10fef8jsn6ea00329114d";
 const api_host = "alpha-vantage.p.rapidapi.com";
 
 // retrieve cryptocurreny Obj, sends 3 requests
-// reqeusts are capped at 5 per minute due to FREE subscription, hence timer for 1min
+// requests are capped at 5 per minute due to FREE subscription, hence timer for 1min
 async function getCrypto(symbolTarget) {
   var priceUSD_res;
   var priceMYR_res;
   var rateUSDMYR_res;
+  var date_res;
   var finalRes = {};
 
   return new Promise(function (resolve, reject) {
     getRate().then((rate_res) => {
-      rateUSDMYR_res = rate_res;
+      rateUSDMYR_res = rate_res[0];
+      date_res = rate_res[1].slice(0, 9);
       try {
         for (let i = 0; i < currencyArray.length; i++) {
           getPrice(symbolTarget, currencyArray[i]).then((price_res) => {
@@ -35,7 +37,7 @@ async function getCrypto(symbolTarget) {
                 priceUSD: priceUSD_res.toFixed(2),
                 priceMYR: priceMYR_res.toFixed(2),
                 rateUSDMYR: rateUSDMYR_res,
-                date: getDate(),
+                date: date_res,
               };
               setTimeout(() => {
                 console.log("Retrieved:\t" + symbolTarget + "\n");
@@ -72,9 +74,10 @@ function getRate() {
       .request(currencyRate)
       .then(function (response) {
         var res = response.data[Object.keys(response.data)[0]];
+        var date_res = res[Object.keys(res)[5]];
         rateUSDMYR_res = res[Object.keys(res)[8]];
         if (rateUSDMYR_res != null) {
-          resolve(rateUSDMYR_res);
+          resolve([rateUSDMYR_res, date_res]);
         } else {
           reject("Error fetching from API");
         }
@@ -120,19 +123,6 @@ function getPrice(symbolTarget, currencyTarget) {
         console.error(error);
       });
   });
-}
-
-// retrieve date
-function getDate() {
-  let currentDate = new Date();
-  let finalDate =
-    currentDate.getFullYear() +
-    "-" +
-    ("0" + (currentDate.getMonth() + 1)).slice(-2) +
-    "-" +
-    ("0" + (currentDate.getDate() + 1)).slice(-2);
-
-  return finalDate;
 }
 
 // looping per symbol

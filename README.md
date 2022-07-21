@@ -4,7 +4,7 @@
 
 # Challenge 1
 
-1. Execute "node c1.js" in your terminal.
+1. Execute "node c1.js" in your terminal (Visual Studio Code, Eclipse, CMD.exe, & etc).
 2. "output.js" will be generated in project folder.
 
 # Challenge 2

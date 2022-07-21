@@ -18,7 +18,7 @@ async function getCrypto(symbolTarget) {
   return new Promise(function (resolve, reject) {
     getRate().then((rate_res) => {
       rateUSDMYR_res = rate_res[0];
-      date_res = rate_res[1].slice(0, 9);
+      date_res = rate_res[1].slice(0, 10);
       try {
         for (let i = 0; i < currencyArray.length; i++) {
           getPrice(symbolTarget, currencyArray[i]).then((price_res) => {

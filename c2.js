@@ -1,15 +1,13 @@
 const axios = require("axios");
 const symbolArray = ["BTC", "ETH", "XRP"];
-// const symbolArray = ["BTC", "ETH"];
 const currencyArray = ["USD", "MYR"];
 
 const api_url = "https://alpha-vantage.p.rapidapi.com/query";
-// const api_key = "e79d7e9983mshc39d988d165c7ccp17a614jsn24f04095fb67";
 const api_key = "cedfab5358mshe58fa096c396573p10fef8jsn6ea00329114d";
 const api_host = "alpha-vantage.p.rapidapi.com";
 
 // retrieve cryptocurreny Obj, sends 3 requests
-// 3 requests per call, cap at 5 requests per minute due to FREE subscription
+// reqeusts are capped at 5 per minute due to FREE subscription, hence timer for 1min
 async function getCrypto(symbolTarget) {
   var priceUSD_res;
   var priceMYR_res;
@@ -149,6 +147,7 @@ async function getData() {
   }
   finalJSON = JSON.stringify(finalOutput);
   console.log(finalJSON);
+  console.log(finalOutput);
 }
 
 getData();

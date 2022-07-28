@@ -42,7 +42,7 @@ async function getCrypto(symbolTarget) {
               setTimeout(() => {
                 console.log("Retrieved:\t" + symbolTarget + "\n");
                 resolve(finalRes);
-              }, 60000);
+              }, 60060);
               // Timeout due to limit of 5 request per minute
             }
           });

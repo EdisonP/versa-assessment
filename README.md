@@ -12,3 +12,11 @@
 1. Execute "npm install" to install dependencies.
 2. Execute "node c2.js".
 3. Output will be displayed on console log.
+
+
+# Missing points
+1. Missing package dependency for installation
+2. Eye for details: 
+- unstandardized usage of let & var
+- c1: BIGBANG on output, despite BIG BANG on text.
+- c2: decimals were set on currency output rather than exchange rate
